@@ -275,10 +275,11 @@
       dt.addColumn('number', 'V');
       dt.addColumn({type:'string', role:'style'});
       dt.addColumn({type:'string', role:'tooltip'});
+      dt.addColumn({type:'string', role:'annotation'});
       MONTHS.forEach((m, i) => {
         const v = arr[i];
         const c = getColor(arr, i, allowGold);
-        dt.addRow([MSHORT[i], v, `color:${c};opacity:0.88`, v !== null ? `${m}\n${v}` : `${m}\nBrak danych`]);
+        dt.addRow([MSHORT[i], v, `color:${c};opacity:0.88`, v !== null ? `${m}\n${v}` : `${m}\nBrak danych`, c === GOLD ? '★' : null]);
       });
       chartObj.draw(dt, {
         width: w,
@@ -289,6 +290,7 @@
         vAxis: {textPosition:'in', textStyle:{color:'#94A3B8', fontSize:10, fontName:'Inter'}, format:'#,##0', gridlines:{color:'#F5F3F0'}, baselineColor:'#EDE9E4', minValue:0},
         backgroundColor: {fill:'transparent'},
         animation: {duration:300, easing:'out'},
+        annotations: {textStyle:{color:'#92400e', fontSize:14, bold:true}, stem:{color:'transparent', length:6}},
       });
     }
 
