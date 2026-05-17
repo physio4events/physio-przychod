@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Przych&#243;d miesi&#281;czny &#8212; Physio 4 Events</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+</head>
+<body class="bg-gray-50 min-h-screen p-4 md:p-10">
+
+  <div class="max-w-5xl mx-auto">
+
+    <div class="flex items-start justify-between mb-1 gap-4">
+      <h1 class="text-2xl md:text-3xl font-bold text-gray-800">Przych&#243;d miesi&#281;czny</h1>
+      <span id="status" class="text-xs mt-2 text-right flex-shrink-0"></span>
+    </div>
+    <p class="text-gray-400 mb-6 text-sm">Physio 4 Events &middot; 2026</p>
+
+    <!-- Legend -->
+    <div class="flex flex-wrap gap-3 mb-6">
+      <span class="flex items-center gap-2 text-xs md:text-sm text-gray-600">
+        <span class="inline-block w-3 h-3 rounded-full bg-yellow-400 flex-shrink-0"></span>Rekord wszech czas&#243;w
+      </span>
+      <span class="flex items-center gap-2 text-xs md:text-sm text-gray-600">
+        <span class="inline-block w-3 h-3 rounded-full bg-green-500 flex-shrink-0"></span>Wzrost MoM
+      </span>
+      <span class="flex items-center gap-2 text-xs md:text-sm text-gray-600">
+        <span class="inline-block w-3 h-3 rounded-full bg-red-500 flex-shrink-0"></span>Spadek MoM
+      </span>
+    </div>
+
+    <!-- Revenue chart -->
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 md:p-6 mb-4 md:mb-6">
+      <h2 class="text-sm md:text-base font-semibold text-gray-700 mb-4">Wykres przychod&#243;w</h2>
+      <div id="chart-rev" style="height:280px;" class="w-full"></div>
+    </div>
+
+    <!-- Events chart -->
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 md:p-6 mb-4 md:mb-6">
+      <h2 class="text-sm md:text-base font-semibold text-gray-700 mb-4">Liczba event&#243;w</h2>
+      <div id="chart-evt" style="height:240px;" class="w-full"></div>
+    </div>
+
+    <!-- Summary -->
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 md:p-6 mb-4 md:mb-6">
+      <h2 class="text-sm md:text-base font-semibold text-gray-700 mb-4">Podsumowanie</h2>
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="text-left text-gray-400 border-b border-gray-100">
+            <th class="pb-3 pr-4 font-medium">Wska&#378;nik</th>
+            <th class="pb-3 font-medium">Warto&#347;&#263;</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="border-b border-gray-100">
+            <td class="py-3 pr-4 text-gray-500">&#321;&#261;czny przych&#243;d</td>
+            <td class="py-3 font-semibold text-gray-800" id="summary-rev-total">&#8212;</td>
+          </tr>
+          <tr class="border-b border-gray-100">
+            <td class="py-3 pr-4 text-gray-500">&#346;rednia miesi&#281;czna (przych&#243;d)</td>
+            <td class="py-3 font-semibold text-gray-800" id="summary-avg">&#8212;</td>
+          </tr>
+          <tr class="border-b border-gray-100">
+            <td class="py-3 pr-4 text-gray-500">Najlepszy miesi&#261;c (przych&#243;d)</td>
+            <td class="py-3 font-semibold text-gray-800" id="summary-best">&#8212;</td>
+          </tr>
+          <tr class="border-b border-gray-100">
+            <td class="py-3 pr-4 text-gray-500">&#321;&#261;czna liczba event&#243;w</td>
+            <td class="py-3 font-semibold text-gray-800" id="summary-evt-total">&#8212;</td>
+          </tr>
+          <tr>
+            <td class="py-3 pr-4 text-gray-500">Najbardziej pracowity miesi&#261;c</td>
+            <td class="py-3 font-semibold text-gray-800" id="summary-evt-best">&#8212;</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Revenue input table -->
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 md:p-6 mb-4 md:mb-6">
+      <h2 class="text-sm md:text-base font-semibold text-gray-700 mb-4">Przych&#243;d &#8212; dane miesi&#281;czne</h2>
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="text-left text-gray-400 border-b border-gray-100">
+            <th class="pb-3 pr-4 font-medium">Miesi&#261;c</th>
+            <th class="pb-3 pr-4 font-medium">Przych&#243;d (PLN)</th>
+            <th class="pb-3 pr-4 font-medium hidden md:table-cell">Zmiana MoM</th>
+            <th class="pb-3 font-medium hidden md:table-cell">Status</th>
+          </tr>
+        </thead>
+        <tbody id="rev-table"></tbody>
+      </table>
+    </div>
+
+    <!-- Events input table -->
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 md:p-6">
+      <h2 class="text-sm md:text-base font-semibold text-gray-700 mb-4">Eventy &#8212; dane miesi&#281;czne</h2>
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="text-left text-gray-400 border-b border-gray-100">
+            <th class="pb-3 pr-4 font-medium">Miesi&#261;c</th>
+            <th class="pb-3 pr-4 font-medium">Liczba event&#243;w</th>
+            <th class="pb-3 pr-4 font-medium hidden md:table-cell">Zmiana MoM</th>
+            <th class="pb-3 font-medium hidden md:table-cell">Status</th>
+          </tr>
+        </thead>
+        <tbody id="evt-table"></tbody>
+      </table>
+    </div>
+
+  </div>
+
+  <script>
+    // ← Paste your Apps Script Web App URL here
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbynRSZDAjh-8-9NmvZLwkaodv5uhhT8k083lYdKt07XHW9EQgjvkYYY5ZSVM5BL6BjHHw/exec';
+
+    google.charts.load('current', {packages: ['corechart']});
+    google.charts.setOnLoadCallback(init);
+
+    const MONTHS = [
+      'Styczeń', 'Luty', 'Marzec', 'Kwiecień', 'Maj', 'Czerwiec',
+      'Lipiec', 'Sierpień', 'Wrzesień', 'Październik', 'Listopad', 'Grudzień'
+    ];
+    const MONTHS_SHORT = [
+      'Sty', 'Lut', 'Mar', 'Kwi', 'Maj', 'Cze',
+      'Lip', 'Sie', 'Wrz', 'Paź', 'Lis', 'Gru'
+    ];
+
+    const C_GOLD    = '#F59E0B';
+    const C_GREEN   = '#22C55E';
+    const C_RED     = '#EF4444';
+    const C_NEUTRAL = '#CBD5E1';
+
+    const SHEET_READY = SCRIPT_URL && !SCRIPT_URL.startsWith('WSTAW');
+
+    let chartRev, chartEvt, saveTimer;
+
+    function setStatus(msg, cls) {
+      const el = document.getElementById('status');
+      el.textContent = msg;
+      el.className = `text-xs mt-2 text-right flex-shrink-0 ${cls}`;
+    }
+
+    async function init() {
+      buildTable('rev-table', 'rev');
+      buildTable('evt-table', 'evt');
+      chartRev = new google.visualization.ColumnChart(document.getElementById('chart-rev'));
+      chartEvt = new google.visualization.ColumnChart(document.getElementById('chart-evt'));
+
+      if (SHEET_READY) {
+        setStatus('Ładowanie...', 'text-gray-400');
+        await loadFromSheet();
+      } else {
+        setStatus('Brak URL arkusza', 'text-orange-400');
+      }
+
+      updateAll();
+
+      let resizeTimer;
+      window.addEventListener('resize', () => {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(updateAll, 150);
+      });
+    }
+
+    function buildTable(tbodyId, prefix) {
+      const tbody = document.getElementById(tbodyId);
+      MONTHS.forEach((month, i) => {
+        const tr = document.createElement('tr');
+        tr.className = 'border-b border-gray-50 last:border-0';
+        tr.innerHTML = `
+          <td class="py-2 pr-4 font-medium text-gray-700 text-sm">${month}</td>
+          <td class="py-1.5 pr-4">
+            <input type="number" id="${prefix}-${i}" min="0" step="1" placeholder="0"
+              class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-right text-gray-800 placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-blue-300 text-base md:text-sm"
+              oninput="updateAll()"/>
+          </td>
+          <td class="py-2 pr-4 hidden md:table-cell" id="${prefix}-mom-${i}"><span class="text-gray-300">&mdash;</span></td>
+          <td class="py-2 hidden md:table-cell" id="${prefix}-badge-${i}"></td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function getValues(prefix, isInt) {
+      return MONTHS.map((_, i) => {
+        const raw = document.getElementById(`${prefix}-${i}`).value.trim();
+        if (raw === '') return null;
+        const v = isInt ? parseInt(raw, 10) : parseFloat(raw);
+        return isNaN(v) ? null : v;
+      });
+    }
+
+    function prevNonNull(values, i) {
+      for (let j = i - 1; j >= 0; j--) if (values[j] !== null) return values[j];
+      return null;
+    }
+
+    function getColor(values, i) {
+      const val = values[i];
+      if (val === null) return C_NEUTRAL;
+      const filled = values.filter(v => v !== null);
+      if (val === Math.max(...filled)) return C_GOLD;
+      const prev = prevNonNull(values, i);
+      if (prev === null) return C_NEUTRAL;
+      return val > prev ? C_GREEN : val < prev ? C_RED : C_NEUTRAL;
+    }
+
+    function fmtPLN(n) {
+      return n.toLocaleString('pl-PL', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ' PLN';
+    }
+
+    function updateTable(prefix, values, fmtFn) {
+      values.forEach((val, i) => {
+        const color   = getColor(values, i);
+        const momEl   = document.getElementById(`${prefix}-mom-${i}`);
+        const badgeEl = document.getElementById(`${prefix}-badge-${i}`);
+        const prev    = prevNonNull(values, i);
+
+        if (val === null || prev === null) {
+          momEl.innerHTML = '<span class="text-gray-300">&mdash;</span>';
+        } else {
+          const diff = val - prev;
+          const pct  = ((diff / prev) * 100).toFixed(1);
+          const sign = diff >= 0 ? '+' : '';
+          const cls  = diff > 0 ? 'text-green-600' : diff < 0 ? 'text-red-500' : 'text-gray-400';
+          momEl.innerHTML = `<span class="font-medium ${cls}">${sign}${fmtFn(diff)}</span>
+            <span class="text-gray-400 ml-1 text-xs">(${sign}${pct}%)</span>`;
+        }
+
+        const BADGE = {
+          [C_GOLD]:    ['Rekord',  'bg-yellow-50 text-yellow-700 border border-yellow-300'],
+          [C_GREEN]:   ['Wzrost',  'bg-green-50 text-green-700 border border-green-300'],
+          [C_RED]:     ['Spadek',  'bg-red-50 text-red-600 border border-red-300'],
+          [C_NEUTRAL]: ['', ''],
+        };
+        const [label, cls] = BADGE[color] || ['', ''];
+        badgeEl.innerHTML = label && val !== null
+          ? `<span class="text-xs font-semibold px-2.5 py-0.5 rounded-full ${cls}">${label}</span>` : '';
+      });
+    }
+
+    function drawChart(chartObj, divId, values) {
+      const div  = document.getElementById(divId);
+      const w    = div.offsetWidth;
+      const data = new google.visualization.DataTable();
+      data.addColumn('string', 'Miesiąc');
+      data.addColumn('number', 'Wartość');
+      data.addColumn({type: 'string', role: 'style'});
+      data.addColumn({type: 'string', role: 'tooltip'});
+      MONTHS.forEach((m, i) => {
+        const val   = values[i];
+        const color = getColor(values, i);
+        data.addRow([MONTHS_SHORT[i], val, `color:${color};opacity:0.9`,
+          val !== null ? `${m}\n${val}` : `${m}\nBrak danych`]);
+      });
+      chartObj.draw(data, {
+        width: w,
+        legend: 'none',
+        bar: {groupWidth: '58%'},
+        chartArea: {left: 80, top: 16, right: 12, bottom: 64, width: w - 92},
+        hAxis: {showTextEvery: 1, slantedText: true, slantedTextAngle: 45,
+          textStyle: {color: '#94A3B8', fontSize: 11}},
+        vAxis: {textStyle: {color: '#94A3B8', fontSize: 11}, format: '#,##0',
+          gridlines: {color: '#F8FAFC'}, baselineColor: '#E2E8F0', minValue: 0},
+        backgroundColor: {fill: 'transparent'},
+        animation: {duration: 250, easing: 'out'},
+        enableInteractivity: true,
+      });
+    }
+
+    function updateAll() {
+      const revVals = getValues('rev', false);
+      const evtVals = getValues('evt', true);
+
+      updateTable('rev', revVals, fmtPLN);
+      updateTable('evt', evtVals, n => (n >= 0 ? '+' : '') + Math.round(n) + ' evt');
+      drawChart(chartRev, 'chart-rev', revVals);
+      drawChart(chartEvt, 'chart-evt', evtVals);
+
+      const revFilled = revVals.map((v, i) => v !== null ? {v, i} : null).filter(Boolean);
+      if (revFilled.length === 0) {
+        document.getElementById('summary-rev-total').textContent = '—';
+        document.getElementById('summary-avg').textContent = '—';
+        document.getElementById('summary-best').textContent = '—';
+      } else {
+        const total = revFilled.reduce((a, x) => a + x.v, 0);
+        const avg   = total / revFilled.length;
+        const best  = revFilled.reduce((a, b) => b.v > a.v ? b : a);
+        document.getElementById('summary-rev-total').textContent = fmtPLN(total);
+        document.getElementById('summary-avg').textContent = fmtPLN(avg);
+        document.getElementById('summary-best').innerHTML =
+          `<span class="text-yellow-600 font-bold">${MONTHS[best.i]}</span> — ${fmtPLN(best.v)}`;
+      }
+
+      const evtFilled = evtVals.map((v, i) => v !== null ? {v, i} : null).filter(Boolean);
+      if (evtFilled.length === 0) {
+        document.getElementById('summary-evt-total').textContent = '—';
+        document.getElementById('summary-evt-best').textContent = '—';
+      } else {
+        const total = evtFilled.reduce((a, x) => a + x.v, 0);
+        const best  = evtFilled.reduce((a, b) => b.v > a.v ? b : a);
+        document.getElementById('summary-evt-total').textContent = `${total} eventów`;
+        document.getElementById('summary-evt-best').innerHTML =
+          `<span class="text-yellow-600 font-bold">${MONTHS[best.i]}</span> — ${best.v} eventów`;
+      }
+
+      if (SHEET_READY) scheduleSave(revVals, evtVals);
+    }
+
+    function scheduleSave(revVals, evtVals) {
+      clearTimeout(saveTimer);
+      saveTimer = setTimeout(() => saveToSheet(revVals, evtVals), 1500);
+      setStatus('Niezapisane...', 'text-gray-400');
+    }
+
+    async function saveToSheet(revVals, evtVals) {
+      const rev = revVals.map(v => v !== null ? v : '').join(',');
+      const evt = evtVals.map(v => v !== null ? v : '').join(',');
+      const url = `${SCRIPT_URL}?action=save&rev=${rev}&evt=${evt}`;
+      setStatus('Zapisywanie...', 'text-blue-400');
+      fetch(url)
+        .then(r => r.json())
+        .then(d => d.status === 'ok'
+          ? setStatus('Zapisano ✓', 'text-green-500')
+          : setStatus('Błąd zapisu ⚠ (skrypt zwrócił błąd)', 'text-red-400'))
+        .catch(err => {
+          console.error('Save error:', err);
+          setStatus('Błąd zapisu ⚠ (sprawdź konsolę)', 'text-red-400');
+        });
+    }
+
+    async function loadFromSheet() {
+      try {
+        const res  = await fetch(SCRIPT_URL);
+        const data = await res.json();
+        data.forEach((row, i) => {
+          if (row.rev !== null) document.getElementById(`rev-${i}`).value = row.rev;
+          if (row.evt !== null) document.getElementById(`evt-${i}`).value = row.evt;
+        });
+        setStatus('Zapisano ✓', 'text-green-500');
+      } catch (e) {
+        setStatus('Błąd ładowania ⚠', 'text-red-400');
+      }
+    }
+  </script>
+</body>
+</html>
