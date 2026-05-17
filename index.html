@@ -73,19 +73,9 @@
         <div>
           <p style="margin:0 0 6px; font-size:.65rem; font-weight:700; text-transform:uppercase; letter-spacing:.13em; color:#b0a99e;">Physio 4 Events &middot; 2026</p>
           <h1 style="margin:0; font-size:clamp(1.45rem,3vw,2rem); font-weight:800; color:#111827; letter-spacing:-.025em; line-height:1.1;">Przych&oacute;d miesięczny</h1>
+          <span id="trend-badge" style="display:none; margin-top:7px; font-size:.72rem; font-weight:700; padding:3px 11px; border-radius:99px; letter-spacing:.02em;"></span>
         </div>
         <div id="status" style="display:flex; align-items:center; gap:5px; font-size:.72rem; font-weight:600; color:#94a3b8; white-space:nowrap; margin-top:2px; flex-shrink:0;"></div>
-      </div>
-      <div style="display:flex; flex-wrap:wrap; gap:7px; margin-top:20px;">
-        <span style="display:inline-flex; align-items:center; gap:6px; font-size:.71rem; font-weight:600; color:#64748b; background:#f8f7f5; border:1px solid #ede9e4; padding:5px 13px; border-radius:99px;">
-          <span style="width:7px;height:7px;border-radius:50%;background:#F59E0B;flex-shrink:0;"></span>Rekord przychodu
-        </span>
-        <span style="display:inline-flex; align-items:center; gap:6px; font-size:.71rem; font-weight:600; color:#64748b; background:#f8f7f5; border:1px solid #ede9e4; padding:5px 13px; border-radius:99px;">
-          <span style="width:7px;height:7px;border-radius:50%;background:#22C55E;flex-shrink:0;"></span>Wzrost MoM
-        </span>
-        <span style="display:inline-flex; align-items:center; gap:6px; font-size:.71rem; font-weight:600; color:#64748b; background:#f8f7f5; border:1px solid #ede9e4; padding:5px 13px; border-radius:99px;">
-          <span style="width:7px;height:7px;border-radius:50%;background:#EF4444;flex-shrink:0;"></span>Spadek MoM
-        </span>
       </div>
     </div>
 
@@ -115,13 +105,22 @@
 
     <!-- REVENUE CHART -->
     <div class="card" style="padding:22px 0; margin-bottom:12px; overflow:hidden;">
-      <p style="margin:0 26px 14px; font-size:.68rem; font-weight:700; text-transform:uppercase; letter-spacing:.11em; color:#b0a99e;">Wykres przychod&oacute;w</p>
+      <p style="margin:0 26px 10px; font-size:.68rem; font-weight:700; text-transform:uppercase; letter-spacing:.11em; color:#b0a99e;">Wykres przychod&oacute;w</p>
+      <div style="display:flex; flex-wrap:wrap; gap:6px; margin:0 26px 14px;">
+        <span style="display:inline-flex; align-items:center; gap:5px; font-size:.67rem; font-weight:600; color:#64748b; background:#f8f7f5; border:1px solid #ede9e4; padding:4px 11px; border-radius:99px;"><span style="width:6px;height:6px;border-radius:50%;background:#F59E0B;flex-shrink:0;"></span>Rekord</span>
+        <span style="display:inline-flex; align-items:center; gap:5px; font-size:.67rem; font-weight:600; color:#64748b; background:#f8f7f5; border:1px solid #ede9e4; padding:4px 11px; border-radius:99px;"><span style="width:6px;height:6px;border-radius:50%;background:#22C55E;flex-shrink:0;"></span>Powyżej średniej</span>
+        <span style="display:inline-flex; align-items:center; gap:5px; font-size:.67rem; font-weight:600; color:#64748b; background:#f8f7f5; border:1px solid #ede9e4; padding:4px 11px; border-radius:99px;"><span style="width:6px;height:6px;border-radius:50%;background:#EF4444;flex-shrink:0;"></span>Poniżej średniej</span>
+      </div>
       <div id="chart-rev" style="height:260px; width:100%;"></div>
     </div>
 
     <!-- EVENTS CHART -->
     <div class="card" style="padding:22px 0; margin-bottom:16px; overflow:hidden;">
-      <p style="margin:0 26px 14px; font-size:.68rem; font-weight:700; text-transform:uppercase; letter-spacing:.11em; color:#b0a99e;">Liczba event&oacute;w</p>
+      <p style="margin:0 26px 10px; font-size:.68rem; font-weight:700; text-transform:uppercase; letter-spacing:.11em; color:#b0a99e;">Liczba event&oacute;w</p>
+      <div style="display:flex; flex-wrap:wrap; gap:6px; margin:0 26px 14px;">
+        <span style="display:inline-flex; align-items:center; gap:5px; font-size:.67rem; font-weight:600; color:#64748b; background:#f8f7f5; border:1px solid #ede9e4; padding:4px 11px; border-radius:99px;"><span style="width:6px;height:6px;border-radius:50%;background:#22C55E;flex-shrink:0;"></span>Powyżej średniej</span>
+        <span style="display:inline-flex; align-items:center; gap:5px; font-size:.67rem; font-weight:600; color:#64748b; background:#f8f7f5; border:1px solid #ede9e4; padding:4px 11px; border-radius:99px;"><span style="width:6px;height:6px;border-radius:50%;background:#EF4444;flex-shrink:0;"></span>Poniżej średniej</span>
+      </div>
       <div id="chart-evt" style="height:220px; width:100%;"></div>
     </div>
 
@@ -230,13 +229,11 @@
     function getColor(arr, i, allowGold = true) {
       const v = arr[i];
       if (v === null) return GREY;
-      if (allowGold) {
-        const filled = arr.filter(x => x !== null);
-        if (filled.length && v === Math.max(...filled)) return GOLD;
-      }
-      const p = prevNonNull(arr, i);
-      if (p === null) return GREY;
-      return v > p ? GREEN : v < p ? RED : GREY;
+      const filled = arr.filter(x => x !== null);
+      if (!filled.length) return GREY;
+      if (allowGold && v === Math.max(...filled)) return GOLD;
+      const avg = filled.reduce((a, x) => a + x, 0) / filled.length;
+      return v >= avg ? GREEN : RED;
     }
 
     function fmtPLN(n) {
@@ -262,7 +259,7 @@
             `<span style="color:#9ca3af; font-size:.72rem; margin-left:4px;">(${sign}${pct}%)</span>`;
         }
 
-        const BADGE = {[GOLD]:['Rekord','b-gold'],[GREEN]:['Wzrost','b-green'],[RED]:['Spadek','b-red'],[GREY]:['','']};
+        const BADGE = {[GOLD]:['Rekord','b-gold'],[GREEN]:['Powyżej','b-green'],[RED]:['Poniżej','b-red'],[GREY]:['','']};
         const [label, cls] = BADGE[c] || ['',''];
         bdg.innerHTML = (label && v !== null) ? `<span class="badge ${cls}">${label}</span>` : '';
       });
@@ -297,6 +294,7 @@
       const rv = getValues('rev', false);
       const ev = getValues('evt', true);
 
+      updateTrend(rv);
       updateTable('rev', rv, fmtPLN, true);
       updateTable('evt', ev, n => (n >= 0 ? '+' : '') + Math.round(n) + ' evt', false);
       drawChart(chartRev, 'chart-rev', rv, true);
@@ -331,6 +329,20 @@
         setStatus('Niezapisane…', '#94a3b8');
         saveTimer = setTimeout(() => saveToSheet(rv, ev), 1500);
       }
+    }
+
+    function updateTrend(rv) {
+      const el  = document.getElementById('trend-badge');
+      const cur = new Date().getMonth();
+      const prv = cur - 1;
+      if (prv < 0 || rv[cur] === null || rv[prv] === null) { el.style.display = 'none'; return; }
+      const up  = rv[cur] > rv[prv];
+      const pct = (Math.abs((rv[cur] - rv[prv]) / rv[prv]) * 100).toFixed(1);
+      el.style.display    = 'inline-block';
+      el.textContent      = (up ? '↑' : '↓') + ' ' + (up ? '+' : '−') + pct + '%';
+      el.style.background = up ? '#f0fdf4' : '#fff1f2';
+      el.style.color      = up ? '#15803d' : '#be123c';
+      el.style.border     = '1px solid ' + (up ? '#86efac' : '#fca5a5');
     }
 
     function saveToSheet(rv, ev) {

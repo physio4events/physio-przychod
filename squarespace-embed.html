@@ -1,0 +1,498 @@
+<!-- =====================================================
+     PHYSIO 4 EVENTS — Revenue & Event Tracker
+     Paste into Squarespace Code Block
+     (Edit page → Add Block → Code)
+     Requires Business plan or higher.
+===================================================== -->
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+
+<style>
+  .p4e *, .p4e *::before, .p4e *::after { box-sizing: border-box; font-family: 'Inter', sans-serif; }
+
+  .p4e {
+    max-width: 940px;
+    margin: 0 auto;
+    background: #E1DFD9;
+    padding: 28px 16px 48px;
+    border-radius: 24px;
+  }
+
+  /* ── Cards ── */
+  .p4e-card {
+    background: rgba(255,255,255,.88);
+    border-radius: 22px;
+    border: 1px solid rgba(255,255,255,.95);
+    box-shadow: 0 1px 2px rgba(0,0,0,.04), 0 6px 20px rgba(0,0,0,.07);
+    margin-bottom: 12px;
+  }
+  .p4e-card-inner { padding: 22px 26px; }
+  .p4e-card-chart-inner { padding: 22px 0; overflow: hidden; }
+  .p4e-card-title-pad { padding: 0 26px; }
+
+  .p4e-metric {
+    background: #fff;
+    border-radius: 18px;
+    border: 1px solid rgba(0,0,0,.05);
+    box-shadow: 0 1px 2px rgba(0,0,0,.04), 0 4px 14px rgba(0,0,0,.06);
+    padding: 18px 20px;
+  }
+
+  /* ── Header ── */
+  .p4e-eyebrow {
+    margin: 0 0 6px;
+    font-size: .65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .13em;
+    color: #b0a99e;
+  }
+  .p4e-title {
+    margin: 0;
+    font-size: clamp(1.45rem, 3vw, 2rem);
+    font-weight: 800;
+    color: #111827;
+    letter-spacing: -.025em;
+    line-height: 1.1;
+  }
+  .p4e-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .p4e-status {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: .72rem;
+    font-weight: 600;
+    color: #94a3b8;
+    white-space: nowrap;
+    margin-top: 2px;
+    flex-shrink: 0;
+  }
+  .p4e-status-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    display: inline-block;
+    flex-shrink: 0;
+  }
+
+  /* ── Legend ── */
+  .p4e-legend { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 20px; }
+  .p4e-leg-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: .71rem;
+    font-weight: 600;
+    color: #64748b;
+    background: #f8f7f5;
+    border: 1px solid #ede9e4;
+    padding: 5px 13px;
+    border-radius: 99px;
+  }
+  .p4e-leg-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+
+  /* ── KPI grid ── */
+  .p4e-kpi-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+  .p4e-metric-label {
+    margin: 0 0 8px;
+    font-size: .63rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .11em;
+    color: #b0a99e;
+  }
+  .p4e-metric-value {
+    margin: 0;
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: #111827;
+    letter-spacing: -.022em;
+    line-height: 1.2;
+  }
+  .p4e-metric-value-sm {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #111827;
+    line-height: 1.3;
+  }
+
+  /* ── Section title ── */
+  .p4e-section-title {
+    margin: 0 0 14px;
+    font-size: .68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .11em;
+    color: #b0a99e;
+  }
+
+  /* ── Table ── */
+  .p4e-table { width: 100%; border-collapse: collapse; min-width: 280px; }
+  .p4e-table th {
+    text-align: left;
+    padding: 0 16px 10px 0;
+    font-size: .63rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .09em;
+    color: #c8c4bc;
+    border-bottom: 1.5px solid #f0eee9;
+  }
+  .p4e-table th:last-child { padding-right: 0; }
+  .p4e-table td {
+    padding: 8px 16px 8px 0;
+    font-size: .875rem;
+    color: #374151;
+    border-bottom: 1px solid #f5f3f0;
+    vertical-align: middle;
+  }
+  .p4e-table td:last-child { padding-right: 0; }
+  .p4e-table tr:last-child td { border-bottom: none; }
+  .p4e-table tr:hover td { background: rgba(241,245,249,.45); }
+  .p4e-col-m { font-weight: 600; white-space: nowrap; }
+  .p4e-col-v { min-width: 128px; padding-top: 5px; padding-bottom: 5px; }
+
+  /* ── Input ── */
+  .p4e-input {
+    width: 100%;
+    border: 1.5px solid #e8e4dd;
+    border-radius: 10px;
+    padding: 9px 12px;
+    text-align: right;
+    font-size: .9rem;
+    color: #1e293b;
+    background: #faf9f7;
+    outline: none;
+    -webkit-appearance: none;
+    transition: border-color .15s, box-shadow .15s, background .15s;
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+  }
+  .p4e-input::placeholder { color: #d1cdc7; }
+  .p4e-input:focus { border-color: #94a3b8; background: #fff; box-shadow: 0 0 0 3px rgba(148,163,184,.15); }
+  input[type=number].p4e-input::-webkit-inner-spin-button,
+  input[type=number].p4e-input::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+  input[type=number].p4e-input { -moz-appearance: textfield; }
+
+  /* ── Badges ── */
+  .p4e-badge { display: inline-block; font-size: .64rem; font-weight: 700; padding: 2px 9px; border-radius: 99px; letter-spacing: .03em; white-space: nowrap; }
+  .p4e-b-gold  { background: #fefce8; color: #a16207; border: 1px solid #fde68a; }
+  .p4e-b-green { background: #f0fdf4; color: #15803d; border: 1px solid #86efac; }
+  .p4e-b-red   { background: #fff1f2; color: #be123c; border: 1px solid #fca5a5; }
+
+  /* ── MoM ── */
+  .p4e-mom-pct { color: #9ca3af; font-size: .72rem; margin-left: 4px; }
+
+  /* ── Animation ── */
+  @keyframes p4e-blink { 0%,100%{opacity:1} 50%{opacity:.3} }
+  .p4e-blink { animation: p4e-blink 1.4s ease-in-out infinite; }
+
+  /* ── Responsive ── */
+  @media (max-width: 599px) {
+    .p4e { padding: 18px 12px 36px; }
+    .p4e-hide { display: none !important; }
+    .p4e-card-inner { padding: 16px 14px; }
+    .p4e-metric { padding: 14px 16px; }
+    .p4e-metric-value { font-size: 1.1rem; }
+  }
+</style>
+
+<div class="p4e">
+
+  <!-- HEADER -->
+  <div class="p4e-card" style="margin-bottom:14px;">
+    <div class="p4e-card-inner">
+      <div class="p4e-header-row">
+        <div>
+          <p class="p4e-eyebrow">Physio 4 Events &middot; 2026</p>
+          <h2 class="p4e-title">Przych&oacute;d miesięczny</h2>
+        </div>
+        <div class="p4e-status" id="p4e-status"></div>
+      </div>
+      <div class="p4e-legend">
+        <span class="p4e-leg-pill"><span class="p4e-leg-dot" style="background:#F59E0B"></span>Rekord przychodu</span>
+        <span class="p4e-leg-pill"><span class="p4e-leg-dot" style="background:#22C55E"></span>Wzrost MoM</span>
+        <span class="p4e-leg-pill"><span class="p4e-leg-dot" style="background:#EF4444"></span>Spadek MoM</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- KPI TILES -->
+  <div class="p4e-kpi-grid">
+    <div class="p4e-metric">
+      <p class="p4e-metric-label">Łączny przychód</p>
+      <p class="p4e-metric-value" id="p4e-sum">&mdash;</p>
+    </div>
+    <div class="p4e-metric">
+      <p class="p4e-metric-label">Średnia miesięczna</p>
+      <p class="p4e-metric-value" id="p4e-avg">&mdash;</p>
+    </div>
+    <div class="p4e-metric">
+      <p class="p4e-metric-label">Najlepszy miesiąc</p>
+      <p class="p4e-metric-value-sm" id="p4e-best">&mdash;</p>
+    </div>
+    <div class="p4e-metric">
+      <p class="p4e-metric-label">Łączne eventy</p>
+      <p class="p4e-metric-value" id="p4e-et">&mdash;</p>
+    </div>
+  </div>
+  <div class="p4e-metric" style="margin-bottom:16px;">
+    <p class="p4e-metric-label">Najbardziej pracowity miesiąc</p>
+    <p class="p4e-metric-value-sm" id="p4e-eb">&mdash;</p>
+  </div>
+
+  <!-- REVENUE CHART -->
+  <div class="p4e-card">
+    <div class="p4e-card-chart-inner">
+      <p class="p4e-section-title p4e-card-title-pad">Wykres przychod&oacute;w</p>
+      <div id="p4e-cr" style="height:260px; width:100%;"></div>
+    </div>
+  </div>
+
+  <!-- EVENTS CHART -->
+  <div class="p4e-card">
+    <div class="p4e-card-chart-inner">
+      <p class="p4e-section-title p4e-card-title-pad">Liczba event&oacute;w</p>
+      <div id="p4e-ce" style="height:220px; width:100%;"></div>
+    </div>
+  </div>
+
+  <!-- REVENUE TABLE -->
+  <div class="p4e-card">
+    <div class="p4e-card-inner" style="overflow-x:auto;">
+      <p class="p4e-section-title">Przych&oacute;d &mdash; dane miesięczne</p>
+      <table class="p4e-table">
+        <thead><tr>
+          <th class="p4e-col-m">Miesiąc</th>
+          <th>Przychód (PLN)</th>
+          <th class="p4e-hide">MoM</th>
+          <th class="p4e-hide">Status</th>
+        </tr></thead>
+        <tbody id="p4e-rt"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- EVENTS TABLE -->
+  <div class="p4e-card" style="margin-bottom:0;">
+    <div class="p4e-card-inner" style="overflow-x:auto;">
+      <p class="p4e-section-title">Eventy &mdash; dane miesięczne</p>
+      <table class="p4e-table">
+        <thead><tr>
+          <th class="p4e-col-m">Miesiąc</th>
+          <th>Liczba eventów</th>
+          <th class="p4e-hide">MoM</th>
+          <th class="p4e-hide">Status</th>
+        </tr></thead>
+        <tbody id="p4e-et2"></tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbynRSZDAjh-8-9NmvZLwkaodv5uhhT8k083lYdKt07XHW9EQgjvkYYY5ZSVM5BL6BjHHw/exec';
+  var SHEET_ID   = '1AmVMKy81-l5XGaPDlnNM2V_v499Y7XjUvu5vrOB6oVE';
+
+  var MONTHS = ['Styczeń','Luty','Marzec','Kwiecień','Maj','Czerwiec','Lipiec','Sierpień','Wrzesień','Październik','Listopad','Grudzień'];
+  var MSHORT = ['Sty','Lut','Mar','Kwi','Maj','Cze','Lip','Sie','Wrz','Paź','Lis','Gru'];
+  var GOLD = '#F59E0B', GREEN = '#22C55E', RED = '#EF4444', GREY = '#CBD5E1';
+
+  var cRev, cEvt, saveTimer;
+
+  function setStatus(msg, color, pulse) {
+    var el  = document.getElementById('p4e-status');
+    var dot = '<span class="p4e-status-dot' + (pulse ? ' p4e-blink' : '') + '" style="background:' + color + ';"></span>';
+    el.innerHTML = dot + msg;
+    el.style.color = color;
+  }
+
+  google.charts.load('current', {packages: ['corechart']});
+  google.charts.setOnLoadCallback(function() {
+    buildTable('p4e-rt',  'r');
+    buildTable('p4e-et2', 'e');
+    cRev = new google.visualization.ColumnChart(document.getElementById('p4e-cr'));
+    cEvt = new google.visualization.ColumnChart(document.getElementById('p4e-ce'));
+    setStatus('Ładowanie…', '#94a3b8', true);
+    load()
+      .then(function() { update(); })
+      .catch(function() { setStatus('Błąd ładowania ⚠', '#ef4444', false); update(); });
+    var t;
+    window.addEventListener('resize', function() { clearTimeout(t); t = setTimeout(update, 150); });
+  });
+
+  function buildTable(id, prefix) {
+    var tbody = document.getElementById(id);
+    MONTHS.forEach(function(m, i) {
+      var tr = document.createElement('tr');
+      tr.innerHTML =
+        '<td class="p4e-col-m">' + m + '</td>' +
+        '<td class="p4e-col-v"><input type="number" id="' + prefix + i + '" min="0" step="1" placeholder="—" class="p4e-input" oninput="update()"></td>' +
+        '<td class="p4e-hide" id="' + prefix + 'm' + i + '"><span style="color:#d1d5db;">—</span></td>' +
+        '<td class="p4e-hide" id="' + prefix + 'b' + i + '"></td>';
+      tbody.appendChild(tr);
+    });
+  }
+
+  function vals(prefix, isInt) {
+    return MONTHS.map(function(_, i) {
+      var raw = document.getElementById(prefix + i).value.trim();
+      if (!raw) return null;
+      var v = isInt ? parseInt(raw, 10) : parseFloat(raw);
+      return isNaN(v) ? null : v;
+    });
+  }
+
+  function prevNonNull(arr, i) {
+    for (var j = i - 1; j >= 0; j--) if (arr[j] !== null) return arr[j];
+    return null;
+  }
+
+  function getColor(arr, i, allowGold) {
+    var v = arr[i];
+    if (v === null) return GREY;
+    if (allowGold) {
+      var filled = arr.filter(function(x) { return x !== null; });
+      if (filled.length && v === Math.max.apply(null, filled)) return GOLD;
+    }
+    var p = prevNonNull(arr, i);
+    if (p === null) return GREY;
+    return v > p ? GREEN : v < p ? RED : GREY;
+  }
+
+  function fmtPLN(n) {
+    return n.toLocaleString('pl-PL', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ' PLN';
+  }
+
+  function updateTable(prefix, arr, fmt, allowGold) {
+    arr.forEach(function(v, i) {
+      var c   = getColor(arr, i, allowGold);
+      var p   = prevNonNull(arr, i);
+      var mom = document.getElementById(prefix + 'm' + i);
+      var bdg = document.getElementById(prefix + 'b' + i);
+
+      if (v === null || p === null) {
+        mom.innerHTML = '<span style="color:#d1d5db;">—</span>';
+      } else {
+        var d    = v - p;
+        var pct  = ((d / p) * 100).toFixed(1);
+        var sign = d >= 0 ? '+' : '';
+        var col  = d > 0 ? '#16a34a' : d < 0 ? '#dc2626' : '#94a3b8';
+        mom.innerHTML =
+          '<span style="font-weight:600;color:' + col + ';">' + sign + fmt(d) + '</span>' +
+          '<span class="p4e-mom-pct">(' + sign + pct + '%)</span>';
+      }
+
+      var B = {};
+      B[GOLD]  = ['Rekord', 'p4e-b-gold'];
+      B[GREEN] = ['Wzrost', 'p4e-b-green'];
+      B[RED]   = ['Spadek', 'p4e-b-red'];
+      B[GREY]  = ['', ''];
+      var lb = B[c] || ['', ''];
+      bdg.innerHTML = (lb[0] && v !== null) ? '<span class="p4e-badge ' + lb[1] + '">' + lb[0] + '</span>' : '';
+    });
+  }
+
+  function drawChart(chart, divId, arr, allowGold) {
+    var div = document.getElementById(divId);
+    var w   = Math.floor(div.getBoundingClientRect().width) || div.offsetWidth || 600;
+    var dt  = new google.visualization.DataTable();
+    dt.addColumn('string', 'M');
+    dt.addColumn('number', 'V');
+    dt.addColumn({type: 'string', role: 'style'});
+    dt.addColumn({type: 'string', role: 'tooltip'});
+    MONTHS.forEach(function(m, i) {
+      var v = arr[i], c = getColor(arr, i, allowGold);
+      dt.addRow([MSHORT[i], v, 'color:' + c + ';opacity:0.88', v !== null ? m + '\n' + v : m + '\nBrak danych']);
+    });
+    chart.draw(dt, {
+      width: w,
+      legend: 'none',
+      bar: {groupWidth: '60%'},
+      chartArea: {left: 4, top: 8, right: 4, bottom: 56},
+      hAxis: {showTextEvery: 1, slantedText: true, slantedTextAngle: 45, textStyle: {color: '#94A3B8', fontSize: 11, fontName: 'Inter'}},
+      vAxis: {textPosition: 'in', textStyle: {color: '#94A3B8', fontSize: 10, fontName: 'Inter'}, format: '#,##0', gridlines: {color: '#F5F3F0'}, baselineColor: '#EDE9E4', minValue: 0},
+      backgroundColor: {fill: 'transparent'},
+      animation: {duration: 300, easing: 'out'},
+    });
+  }
+
+  function update() {
+    var rv = vals('r', false);
+    var ev = vals('e', true);
+
+    updateTable('r', rv, fmtPLN, true);
+    updateTable('e', ev, function(n) { return (n >= 0 ? '+' : '') + Math.round(n) + ' evt'; }, false);
+    drawChart(cRev, 'p4e-cr', rv, true);
+    drawChart(cEvt, 'p4e-ce', ev, false);
+
+    var rf = rv.map(function(v,i){ return v !== null ? {v:v,i:i} : null; }).filter(Boolean);
+    if (rf.length) {
+      var total = rf.reduce(function(a,x){ return a + x.v; }, 0);
+      var avg   = total / rf.length;
+      var best  = rf.reduce(function(a,b){ return b.v > a.v ? b : a; });
+      document.getElementById('p4e-sum').textContent = fmtPLN(total);
+      document.getElementById('p4e-avg').textContent = fmtPLN(avg);
+      document.getElementById('p4e-best').innerHTML  =
+        '<span style="color:#d97706;font-weight:800;">' + MONTHS[best.i] + '</span>' +
+        ' <span style="color:#9ca3af;font-weight:500;">—</span> ' + fmtPLN(best.v);
+    } else {
+      ['p4e-sum','p4e-avg','p4e-best'].forEach(function(id){ document.getElementById(id).textContent = '—'; });
+    }
+
+    var ef = ev.map(function(v,i){ return v !== null ? {v:v,i:i} : null; }).filter(Boolean);
+    if (ef.length) {
+      var tot  = ef.reduce(function(a,x){ return a + x.v; }, 0);
+      var best = ef.reduce(function(a,b){ return b.v > a.v ? b : a; });
+      document.getElementById('p4e-et').textContent = tot + ' eventów';
+      document.getElementById('p4e-eb').innerHTML   =
+        '<span style="color:#d97706;font-weight:800;">' + MONTHS[best.i] + '</span>' +
+        ' <span style="color:#9ca3af;font-weight:500;">—</span> ' + best.v + ' eventów';
+    } else {
+      ['p4e-et','p4e-eb'].forEach(function(id){ document.getElementById(id).textContent = '—'; });
+    }
+
+    clearTimeout(saveTimer);
+    setStatus('Niezapisane…', '#94a3b8', false);
+    saveTimer = setTimeout(function() { save(rv, ev); }, 1500);
+  }
+
+  function save(rv, ev) {
+    var r = rv.map(function(v){ return v !== null ? v : ''; }).join(',');
+    var e = ev.map(function(v){ return v !== null ? v : ''; }).join(',');
+    setStatus('Zapisywanie…', '#60a5fa', true);
+    var img = new Image();
+    img.onload = img.onerror = function() { setStatus('Zapisano ✓', '#22c55e', false); };
+    img.src = SCRIPT_URL + '?action=save&rev=' + r + '&evt=' + e;
+  }
+
+  function load() {
+    return new Promise(function(resolve, reject) {
+      var query = new google.visualization.Query(
+        'https://docs.google.com/spreadsheets/d/' + SHEET_ID + '/gviz/tq?sheet=Dane&t=' + Date.now()
+      );
+      query.send(function(res) {
+        if (res.isError()) { reject(new Error(res.getMessage())); return; }
+        var table = res.getDataTable();
+        for (var i = 0; i < table.getNumberOfRows(); i++) {
+          var rev = table.getValue(i, 1);
+          var evt = table.getValue(i, 2);
+          if (rev !== null) document.getElementById('r' + i).value = rev;
+          if (evt !== null) document.getElementById('e' + i).value = evt;
+        }
+        setStatus('Wczytano ✓', '#22c55e', false);
+        resolve();
+      });
+    });
+  }
+</script>
