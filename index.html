@@ -150,7 +150,11 @@
 
       if (SHEET_READY) {
         setStatus('Ładowanie...', 'text-gray-400');
-        await loadFromSheet();
+        try {
+          await loadFromSheet();
+        } catch(e) {
+          setStatus('Błąd ładowania ⚠', 'text-red-400');
+        }
       } else {
         setStatus('Brak URL arkusza', 'text-orange-400');
       }
