@@ -214,14 +214,12 @@
       <div class="p4e-header-row">
         <div>
           <p class="p4e-eyebrow">Physio 4 Events &middot; 2026</p>
-          <h2 class="p4e-title">Przych&oacute;d miesięczny</h2>
+          <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+            <h2 class="p4e-title">Przych&oacute;d miesięczny</h2>
+            <span id="p4e-trend" style="display:none; font-size:.72rem; font-weight:700; padding:5px 12px; border-radius:10px; letter-spacing:.02em; flex-direction:column; align-items:center; line-height:1.3;"></span>
+          </div>
         </div>
         <div class="p4e-status" id="p4e-status"></div>
-      </div>
-      <div class="p4e-legend">
-        <span class="p4e-leg-pill"><span class="p4e-leg-dot" style="background:#F59E0B"></span>Rekord przychodu</span>
-        <span class="p4e-leg-pill"><span class="p4e-leg-dot" style="background:#22C55E"></span>Wzrost MoM</span>
-        <span class="p4e-leg-pill"><span class="p4e-leg-dot" style="background:#EF4444"></span>Spadek MoM</span>
       </div>
     </div>
   </div>
@@ -253,7 +251,12 @@
   <!-- REVENUE CHART -->
   <div class="p4e-card">
     <div class="p4e-card-chart-inner">
-      <p class="p4e-section-title p4e-card-title-pad">Wykres przychod&oacute;w</p>
+      <p class="p4e-section-title p4e-card-title-pad" style="margin-bottom:10px;">Wykres przychod&oacute;w</p>
+      <div style="display:flex; flex-wrap:wrap; gap:6px; padding:0 26px; margin-bottom:14px;">
+        <span class="p4e-leg-pill" style="font-size:.67rem; padding:4px 11px;"><span class="p4e-leg-dot" style="background:#F59E0B; width:6px; height:6px;"></span>Rekord</span>
+        <span class="p4e-leg-pill" style="font-size:.67rem; padding:4px 11px;"><span class="p4e-leg-dot" style="background:#22C55E; width:6px; height:6px;"></span>Powyżej średniej</span>
+        <span class="p4e-leg-pill" style="font-size:.67rem; padding:4px 11px;"><span class="p4e-leg-dot" style="background:#EF4444; width:6px; height:6px;"></span>Poniżej średniej</span>
+      </div>
       <div id="p4e-cr" style="height:260px; width:100%;"></div>
     </div>
   </div>
@@ -261,7 +264,11 @@
   <!-- EVENTS CHART -->
   <div class="p4e-card">
     <div class="p4e-card-chart-inner">
-      <p class="p4e-section-title p4e-card-title-pad">Liczba event&oacute;w</p>
+      <p class="p4e-section-title p4e-card-title-pad" style="margin-bottom:10px;">Liczba event&oacute;w</p>
+      <div style="display:flex; flex-wrap:wrap; gap:6px; padding:0 26px; margin-bottom:14px;">
+        <span class="p4e-leg-pill" style="font-size:.67rem; padding:4px 11px;"><span class="p4e-leg-dot" style="background:#22C55E; width:6px; height:6px;"></span>Powyżej średniej</span>
+        <span class="p4e-leg-pill" style="font-size:.67rem; padding:4px 11px;"><span class="p4e-leg-dot" style="background:#EF4444; width:6px; height:6px;"></span>Poniżej średniej</span>
+      </div>
       <div id="p4e-ce" style="height:220px; width:100%;"></div>
     </div>
   </div>
@@ -361,13 +368,11 @@
   function getColor(arr, i, allowGold) {
     var v = arr[i];
     if (v === null) return GREY;
-    if (allowGold) {
-      var filled = arr.filter(function(x) { return x !== null; });
-      if (filled.length && v === Math.max.apply(null, filled)) return GOLD;
-    }
-    var p = prevNonNull(arr, i);
-    if (p === null) return GREY;
-    return v > p ? GREEN : v < p ? RED : GREY;
+    var filled = arr.filter(function(x) { return x !== null; });
+    if (!filled.length) return GREY;
+    if (allowGold && v === Math.max.apply(null, filled)) return GOLD;
+    var avg = filled.reduce(function(a, x) { return a + x; }, 0) / filled.length;
+    return v >= avg ? GREEN : RED;
   }
 
   function fmtPLN(n) {
@@ -394,9 +399,9 @@
       }
 
       var B = {};
-      B[GOLD]  = ['Rekord', 'p4e-b-gold'];
-      B[GREEN] = ['Wzrost', 'p4e-b-green'];
-      B[RED]   = ['Spadek', 'p4e-b-red'];
+      B[GOLD]  = ['Rekord',  'p4e-b-gold'];
+      B[GREEN] = ['Powyżej', 'p4e-b-green'];
+      B[RED]   = ['Poniżej', 'p4e-b-red'];
       B[GREY]  = ['', ''];
       var lb = B[c] || ['', ''];
       bdg.innerHTML = (lb[0] && v !== null) ? '<span class="p4e-badge ' + lb[1] + '">' + lb[0] + '</span>' : '';
@@ -431,6 +436,7 @@
     var rv = vals('r', false);
     var ev = vals('e', true);
 
+    updateTrend(rv);
     updateTable('r', rv, fmtPLN, true);
     updateTable('e', ev, function(n) { return (n >= 0 ? '+' : '') + Math.round(n) + ' evt'; }, false);
     drawChart(cRev, 'p4e-cr', rv, true);
@@ -465,6 +471,23 @@
     clearTimeout(saveTimer);
     setStatus('Niezapisane…', '#94a3b8', false);
     saveTimer = setTimeout(function() { save(rv, ev); }, 1500);
+  }
+
+  function updateTrend(rv) {
+    var el  = document.getElementById('p4e-trend');
+    var cur = new Date().getMonth();
+    var prv = cur - 1;
+    if (prv < 0 || rv[cur] === null || rv[prv] === null) { el.style.display = 'none'; return; }
+    var up  = rv[cur] > rv[prv];
+    var pct = (Math.abs((rv[cur] - rv[prv]) / rv[prv]) * 100).toFixed(1);
+    el.style.display       = 'inline-flex';
+    el.style.flexDirection = 'column';
+    el.style.alignItems    = 'center';
+    el.innerHTML = '<span style="font-weight:800;">' + (up ? '↑' : '↓') + ' ' + (up ? '+' : '−') + pct + '%</span>' +
+                   '<span style="font-size:.6rem;font-weight:500;opacity:.8;margin-top:1px;">mies. do mies.</span>';
+    el.style.background = up ? '#f0fdf4' : '#fff1f2';
+    el.style.color      = up ? '#15803d' : '#be123c';
+    el.style.border     = '1px solid ' + (up ? '#86efac' : '#fca5a5');
   }
 
   function save(rv, ev) {

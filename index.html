@@ -72,8 +72,10 @@
       <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:16px; flex-wrap:wrap;">
         <div>
           <p style="margin:0 0 6px; font-size:.65rem; font-weight:700; text-transform:uppercase; letter-spacing:.13em; color:#b0a99e;">Physio 4 Events &middot; 2026</p>
-          <h1 style="margin:0; font-size:clamp(1.45rem,3vw,2rem); font-weight:800; color:#111827; letter-spacing:-.025em; line-height:1.1;">Przych&oacute;d miesięczny</h1>
-          <span id="trend-badge" style="display:none; margin-top:7px; font-size:.72rem; font-weight:700; padding:3px 11px; border-radius:99px; letter-spacing:.02em;"></span>
+          <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+            <h1 style="margin:0; font-size:clamp(1.45rem,3vw,2rem); font-weight:800; color:#111827; letter-spacing:-.025em; line-height:1.1;">Przych&oacute;d miesięczny</h1>
+            <span id="trend-badge" style="display:none; font-size:.72rem; font-weight:700; padding:5px 12px; border-radius:10px; letter-spacing:.02em; flex-direction:column; align-items:center; line-height:1.3;"></span>
+          </div>
         </div>
         <div id="status" style="display:flex; align-items:center; gap:5px; font-size:.72rem; font-weight:600; color:#94a3b8; white-space:nowrap; margin-top:2px; flex-shrink:0;"></div>
       </div>
@@ -338,8 +340,10 @@
       if (prv < 0 || rv[cur] === null || rv[prv] === null) { el.style.display = 'none'; return; }
       const up  = rv[cur] > rv[prv];
       const pct = (Math.abs((rv[cur] - rv[prv]) / rv[prv]) * 100).toFixed(1);
-      el.style.display    = 'inline-block';
-      el.textContent      = (up ? '↑' : '↓') + ' ' + (up ? '+' : '−') + pct + '%';
+      el.style.display       = 'inline-flex';
+      el.style.flexDirection = 'column';
+      el.style.alignItems    = 'center';
+      el.innerHTML = `<span style="font-weight:800;">${up ? '↑' : '↓'} ${up ? '+' : '−'}${pct}%</span><span style="font-size:.6rem;font-weight:500;opacity:.8;margin-top:1px;">mies. do mies.</span>`;
       el.style.background = up ? '#f0fdf4' : '#fff1f2';
       el.style.color      = up ? '#15803d' : '#be123c';
       el.style.border     = '1px solid ' + (up ? '#86efac' : '#fca5a5');
