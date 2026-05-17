@@ -325,14 +325,13 @@
         .catch(() => setStatus('Błąd zapisu ⚠', 'text-red-400'));
     }
 
+    const SHEET_ID = '1AmVMKy81-l5XGaPDlnNM2V_v499Y7XjUvu5vrOB6oVE';
+
     function loadFromSheet() {
       return new Promise((resolve, reject) => {
-        const cbName = 'p4e_cb_' + Date.now();
+        const cbName = 'p4e_gviz_' + Date.now();
         const script = document.createElement('script');
-        const timer  = setTimeout(() => {
-          cleanup();
-          reject(new Error('Timeout'));
-        }, 10000);
+        const timer  = setTimeout(() => { cleanup(); reject(new Error('Timeout')); }, 10000);
 
         function cleanup() {
           clearTimeout(timer);
@@ -340,19 +339,22 @@
           if (script.parentNode) script.parentNode.removeChild(script);
         }
 
-        window[cbName] = (data) => {
+        window[cbName] = (res) => {
           cleanup();
-          if (data.error) { reject(new Error(data.error)); return; }
-          data.forEach((row, i) => {
-            if (row.rev !== null) document.getElementById(`rev-${i}`).value = row.rev;
-            if (row.evt !== null) document.getElementById(`evt-${i}`).value = row.evt;
+          if (res.status !== 'ok') { reject(new Error('gviz error')); return; }
+          (res.table.rows || []).forEach((row, i) => {
+            if (!row || !row.c) return;
+            const rev = row.c[1] && row.c[1].v != null ? row.c[1].v : null;
+            const evt = row.c[2] && row.c[2].v != null ? row.c[2].v : null;
+            if (rev !== null) document.getElementById(`rev-${i}`).value = rev;
+            if (evt !== null) document.getElementById(`evt-${i}`).value = evt;
           });
-          setStatus('Zapisano ✓', 'text-green-500');
+          setStatus('Wczytano ✓', 'text-green-500');
           resolve();
         };
 
         script.onerror = () => { cleanup(); reject(new Error('Load failed')); };
-        script.src = `${SCRIPT_URL}?callback=${cbName}`;
+        script.src = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json;callback:${cbName}&sheet=Dane`;
         document.head.appendChild(script);
       });
     }
