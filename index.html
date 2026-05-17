@@ -114,14 +114,14 @@
     </div>
 
     <!-- REVENUE CHART -->
-    <div class="card" style="padding:22px 26px; margin-bottom:12px;">
-      <p style="margin:0 0 14px; font-size:.68rem; font-weight:700; text-transform:uppercase; letter-spacing:.11em; color:#b0a99e;">Wykres przychod&oacute;w</p>
+    <div class="card" style="padding:22px 0; margin-bottom:12px; overflow:hidden;">
+      <p style="margin:0 26px 14px; font-size:.68rem; font-weight:700; text-transform:uppercase; letter-spacing:.11em; color:#b0a99e;">Wykres przychod&oacute;w</p>
       <div id="chart-rev" style="height:260px; width:100%;"></div>
     </div>
 
     <!-- EVENTS CHART -->
-    <div class="card" style="padding:22px 26px; margin-bottom:16px;">
-      <p style="margin:0 0 14px; font-size:.68rem; font-weight:700; text-transform:uppercase; letter-spacing:.11em; color:#b0a99e;">Liczba event&oacute;w</p>
+    <div class="card" style="padding:22px 0; margin-bottom:16px; overflow:hidden;">
+      <p style="margin:0 26px 14px; font-size:.68rem; font-weight:700; text-transform:uppercase; letter-spacing:.11em; color:#b0a99e;">Liczba event&oacute;w</p>
       <div id="chart-evt" style="height:220px; width:100%;"></div>
     </div>
 
@@ -284,10 +284,10 @@
       chartObj.draw(dt, {
         width: w,
         legend: 'none',
-        bar: {groupWidth: '56%'},
-        chartArea: {left: 72, top: 12, right: 12, bottom: 60},
+        bar: {groupWidth: '60%'},
+        chartArea: {left: 4, top: 8, right: 4, bottom: 56},
         hAxis: {showTextEvery:1, slantedText:true, slantedTextAngle:45, textStyle:{color:'#94A3B8', fontSize:11, fontName:'Inter'}},
-        vAxis: {textStyle:{color:'#94A3B8', fontSize:11, fontName:'Inter'}, format:'#,##0', gridlines:{color:'#F5F3F0'}, baselineColor:'#EDE9E4', minValue:0},
+        vAxis: {textPosition:'in', textStyle:{color:'#94A3B8', fontSize:10, fontName:'Inter'}, format:'#,##0', gridlines:{color:'#F5F3F0'}, baselineColor:'#EDE9E4', minValue:0},
         backgroundColor: {fill:'transparent'},
         animation: {duration:300, easing:'out'},
       });
